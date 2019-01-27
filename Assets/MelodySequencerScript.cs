@@ -217,6 +217,7 @@ public class MelodySequencerScript : MonoBehaviour
             ListenNotes.GetComponent<TextMesh>().text = "Wrong";
             StartCoroutine(DisableText());
             GetComponent<KMBombModule>().HandleStrike();
+            keysPressed = 0;
             recordActive = false;
         }
     }
