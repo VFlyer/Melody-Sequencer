@@ -972,6 +972,7 @@ GameObject:
   - component: {fileID: 114759858016838600}
   - component: {fileID: 114192921544355770}
   - component: {fileID: 114779744422961178}
+  - component: {fileID: 114964270674059098}
   m_Layer: 0
   m_Name: Melody Sequencer
   m_TagString: Untagged
@@ -5225,6 +5226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Audio: {fileID: 114235596851326326}
   Bomb: {fileID: 114129272272189722}
+  RuleSeedable: {fileID: 114964270674059098}
   keys:
   - {fileID: 114980505156651774}
   - {fileID: 114675210755185390}
@@ -5529,6 +5531,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightScale: {x: 1, y: 1, z: 1}
   OutlineAmount: 0
+--- !u!114 &114964270674059098
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1744347740418158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adf69c2de51bd3c43bbd9bc22578ee08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _seed: 1
 --- !u!114 &114979389475109754
 MonoBehaviour:
   m_ObjectHideFlags: 1
