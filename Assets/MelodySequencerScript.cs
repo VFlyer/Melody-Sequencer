@@ -91,17 +91,23 @@ public class MelodySequencerScript : MonoBehaviour
                 var majorNotes = new[] { 0, 4, 7, 12, 16, 19 }.Select(i => (i + keys[partIx]) % 24).ToArray();
 
                 parts[partIx] = new int[8];
-                for (int note = 0; note < 8; note++)
+
+                // Make sure that we do not accidentally generate two identical parts
+                do
                 {
-                    var eligibleNotes = (note % 2 == 0 ? majorNotes : notes).ToList();
-                    if (note > 0)
-                        eligibleNotes.RemoveAll(n => Mathf.Abs(n - parts[partIx][note - 1]) >= 7);
-                    else if (partIx > 0)
-                        eligibleNotes.RemoveAll(n => Mathf.Abs(n - parts[partIx - 1].Last()) >= 7);
-                    if (note > 1 && parts[partIx][note - 1] == parts[partIx][note - 2])
-                        eligibleNotes.Remove(parts[partIx][note - 1]);
-                    parts[partIx][note] = eligibleNotes[rnd.Next(0, eligibleNotes.Count)];
+                    for (int note = 0; note < 8; note++)
+                    {
+                        var eligibleNotes = (note % 2 == 0 ? majorNotes : notes).ToList();
+                        if (note > 0)
+                            eligibleNotes.RemoveAll(n => Mathf.Abs(n - parts[partIx][note - 1]) >= 7);
+                        else if (partIx > 0)
+                            eligibleNotes.RemoveAll(n => Mathf.Abs(n - parts[partIx - 1].Last()) >= 7);
+                        if (note > 1 && parts[partIx][note - 1] == parts[partIx][note - 2])
+                            eligibleNotes.Remove(parts[partIx][note - 1]);
+                        parts[partIx][note] = eligibleNotes[rnd.Next(0, eligibleNotes.Count)];
+                    }
                 }
+                while (Enumerable.Range(0, partIx).Any(p => parts[p].SequenceEqual(parts[partIx])));
 
                 Debug.LogFormat(@"[Melody Sequencer #{0}] Solution part {1}: {2}", moduleId, partIx + 1, string.Join(", ", parts[partIx].Select(note => noteNames[note]).ToArray()));
             }
@@ -119,9 +125,9 @@ public class MelodySequencerScript : MonoBehaviour
             int slotIx = Random.Range(0, slotNumbers.Count);
             moduleParts[slotNumbers[slotIx]] = parts[partNumbers[partIx]];
             givenParts.Add(partNumbers[partIx]);
+            Debug.LogFormat(@"[Melody Sequencer #{0}] Slot {1} contains part {2}: {3}", moduleId, slotNumbers[slotIx] + 1, partNumbers[partIx] + 1, string.Join(", ", parts[partNumbers[partIx]].Select(note => noteNames[note]).ToArray()));
             partNumbers.RemoveAt(partIx);
             slotNumbers.RemoveAt(slotIx);
-            Debug.LogFormat(@"[Melody Sequencer #{0}] Shuffled part {1}: {2}", moduleId, i + 1, string.Join(", ", moduleParts[i].Select(note => noteNames[note]).ToArray()));
         }
     }
 
@@ -218,6 +224,7 @@ public class MelodySequencerScript : MonoBehaviour
 
                 ListenNotes.GetComponent<Transform>().localScale = new Vector3(0.1f, 0.5f, 2);
                 ListenNotes.GetComponent<TextMesh>().text = "Well done";
+                Debug.LogFormat(@"[Melody Sequencer #{0}] You successfully swapped slot {1} with slot {2}.", moduleId, selectedPart + 1, currentPart + 1);
 
                 moduleParts[currentPart] = parts[currentPart];
                 moduleParts[selectedPart] = modulePartsTemp;
@@ -228,6 +235,7 @@ public class MelodySequencerScript : MonoBehaviour
                 GetComponent<KMBombModule>().HandleStrike();
                 ListenNotes.GetComponent<Transform>().localScale = new Vector3(0.16f, 0.5f, 2);
                 ListenNotes.GetComponent<TextMesh>().text = "Wrong";
+                Debug.LogFormat(@"[Melody Sequencer #{0}] You tried to swap slot {1} with slot {2} — strike!", moduleId, selectedPart + 1, currentPart + 1);
                 StartCoroutine(DisableText());
             }
             moveActive = false;
