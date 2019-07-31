@@ -110,14 +110,17 @@ public class MelodySequencerScript : MonoBehaviour
 
     void Start()
     {
-        var partNumber = Enumerable.Range(0, parts.Length).ToList();
+        var partNumbers = Enumerable.Range(0, parts.Length).ToList();
+        var slotNumbers = Enumerable.Range(0, parts.Length).ToList();
 
         for (int i = 0; i < 4; i++)
         {
-            int index = Random.Range(0, partNumber.Count);
-            moduleParts[i] = parts[partNumber[index]];
-            givenParts.Add(partNumber[index]);
-            partNumber.RemoveAt(index);
+            int partIx = Random.Range(0, partNumbers.Count);
+            int slotIx = Random.Range(0, slotNumbers.Count);
+            moduleParts[slotNumbers[slotIx]] = parts[partNumbers[partIx]];
+            givenParts.Add(partNumbers[partIx]);
+            partNumbers.RemoveAt(partIx);
+            slotNumbers.RemoveAt(slotIx);
             Debug.LogFormat(@"[Melody Sequencer #{0}] Shuffled part {1}: {2}", moduleId, i + 1, string.Join(", ", moduleParts[i].Select(note => noteNames[note]).ToArray()));
         }
     }
@@ -302,7 +305,6 @@ public class MelodySequencerScript : MonoBehaviour
         GetComponent<KMBombModule>().HandlePass();
         StopAllCoroutines();
     }
-
 
     private IEnumerator DisableText()
     {
