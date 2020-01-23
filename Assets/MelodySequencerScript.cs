@@ -382,6 +382,15 @@ public class MelodySequencerScript : MonoBehaviour
 
     private IEnumerator ProcessTwitchCommand(string command)
     {
+        do
+        {
+            yield return "trycancel";
+        } while (listenActive || recordActive);
+        if (moduleSolved)
+        {
+            yield return "sendtochaterror The module has entered its Melody state, causing the module to be solved shortly.";
+            yield break;
+        }
         Match m;
         if ((m = Regex.Match(command, @"^\s*(slot|select)\s+(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
         {
@@ -391,7 +400,7 @@ public class MelodySequencerScript : MonoBehaviour
             yield return null;
             yield return Enumerable.Repeat(CycleBtns[1], ((slotNumber - 1) - currentPart + 8) % 8).ToArray();
         }
-
+        else
         if ((m = Regex.Match(command, @"^\s*(play|listen +to)\s+(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
         {
             var slotNumber = int.Parse(m.Groups[2].Value);
@@ -400,7 +409,7 @@ public class MelodySequencerScript : MonoBehaviour
             yield return null;
             yield return Enumerable.Repeat(CycleBtns[1], ((slotNumber - 1) - currentPart + 8) % 8).Concat(new[] { listen }).ToArray();
         }
-
+        else
         if ((m = Regex.Match(command, @"^\s*(move|yellow|move +to)\s+(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
         {
             var slotNumber = int.Parse(m.Groups[2].Value);
@@ -409,7 +418,7 @@ public class MelodySequencerScript : MonoBehaviour
             yield return null;
             yield return new[] { move }.Concat(Enumerable.Repeat(CycleBtns[1], ((slotNumber - 1) - currentPart + 8) % 8)).Concat(new[] { move }).ToArray();
         }
-
+        else
         if ((m = Regex.Match(command, @"^\s*(record|submit|input|enter|red|play|press)\s+([ABCDEFG#♯45 ,;]+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
         {
             var sequence = m.Groups[2].Value.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -429,6 +438,7 @@ public class MelodySequencerScript : MonoBehaviour
                 yield return new[] { key };
                 yield return new WaitForSeconds(.13f);
             }
+            yield return "solve";
         }
     }
 }
